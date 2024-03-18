@@ -38,7 +38,7 @@ class Templates {
         };
 
         pc.Entity.prototype._cloneRecursively = function _cloneRecursively(duplicatedIdsMap) {
-            var clone = new pc.Entity(this._app);
+            var clone = new pc.Entity('clone', this._app);
 
             pc.GraphNode.prototype._cloneInternal.call(this, clone);
 
