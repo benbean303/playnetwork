@@ -18,7 +18,7 @@ export default class NetworkEntities extends pc.EventHandler {
         script.entity.forEach((e) => {
             if (!e.networkEntity) return;
 
-            const id = `${pn.id}-${this.nextEntityId}`;
+            const id = `${pn.id}-${this.app.room.id}-${this.nextEntityId}`;
             this.nextEntityId++;
             
             e.networkEntity.id = id;
