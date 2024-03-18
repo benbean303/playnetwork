@@ -231,7 +231,8 @@ class Scripts {
         directory = unifyPath(directory);
 
         try {
-            const items = await fs.readdir(directory);
+            let items = await fs.readdir(directory);
+            items = items.filter((item) => item.endsWith(".js"));
 
             for (let i = 0; i < items.length; i++) {
                 let filePath = `${directory}${path.sep}${items[i]}`;
