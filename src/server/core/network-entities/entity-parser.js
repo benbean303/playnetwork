@@ -114,7 +114,9 @@ const componentsSchema = {
         axis: null,
         height: null,
         asset: valueToRaw.asset,
-        renderAsset: valueToRaw.asset
+        renderAsset: valueToRaw.asset,
+        linearOffset: valueToRaw.vec3,
+        angularOffset: valueToRaw.vec3,
     },
     screen: {
         enabled: null,
