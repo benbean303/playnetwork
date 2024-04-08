@@ -71,17 +71,19 @@ class Templates {
             const entity = this._templateRoot.clone();
 
             // TODO: HACK for client only scripts and entities. Maybe should remove it and implement system to create client-only scripts on backend in runtime
-            for (const key in entity.script.originalData.scripts) {
-                if (scripts.registry.has(key)) continue;
-                const script = entity.script.originalData.scripts[key];
+            if (entity.script) {
+                for (const key in entity.script.originalData.scripts) {
+                    if (scripts.registry.has(key)) continue;
+                    const script = entity.script.originalData.scripts[key];
 
-                for (const attrKey in script.attributes) {
-                    const value = script.attributes[attrKey];
-                    if (typeof value !== 'string') continue;
-                    if (!value.match(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i)) continue;
+                    for (const attrKey in script.attributes) {
+                        const value = script.attributes[attrKey];
+                        if (typeof value !== 'string') continue;
+                        if (!value.match(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i)) continue;
 
-                    const path = this._templateRoot.findByGuid(value).path;
-                    script.attributes[attrKey] = entity.findByPath(path).getGuid();
+                        const path = this._templateRoot.findByGuid(value).path;
+                        script.attributes[attrKey] = entity.findByPath(path).getGuid();
+                    }
                 }
             }
 
