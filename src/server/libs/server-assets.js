@@ -22,8 +22,16 @@ class ServerAssets {
         if (!this.directory) return;
 
         const files = await this._collectMetadataFiles(this.directory);
+        const roomId = this._getRoomId(app);
+
+        if (roomId !== null) {
+            app.once('destroy', () => {
+                this._clearCacheForRoom(roomId);
+            });
+        }
+
         for (const filePath of files) {
-            await this._loadAssetFile(app, filePath);
+            await this._loadAssetFile(app, filePath, roomId);
         }
     }
 
@@ -43,10 +51,11 @@ class ServerAssets {
         return results;
     }
 
-    async _loadAssetFile(app, filePath) {
+    async _loadAssetFile(app, filePath, roomId) {
         try {
             const contents = await fs.readFile(filePath, 'utf8');
-            if (this.cache.get(filePath) === contents) return;
+            const cacheKey = this._cacheKey(filePath, roomId);
+            if (this.cache.get(cacheKey) === contents) return;
 
             const json = JSON.parse(contents);
             if (!json?.id || !json?.type) {
@@ -55,7 +64,7 @@ class ServerAssets {
             }
 
             if (app.assets.get(json.id)) {
-                this.cache.set(filePath, contents);
+                this.cache.set(cacheKey, contents);
                 return;
             }
 
@@ -75,7 +84,7 @@ class ServerAssets {
                 asset.fire('load', asset);
             }
 
-            this.cache.set(filePath, contents);
+            this.cache.set(cacheKey, contents);
         } catch (err) {
             console.error(`Failed to load server asset from ${filePath}`, err);
         }
@@ -109,6 +118,26 @@ class ServerAssets {
             asset.fire('load', asset);
         } catch (err) {
             console.error(`Failed to load server asset file ${absolutePath}`, err);
+        }
+    }
+
+    _cacheKey(filePath, roomId) {
+        return `${roomId ?? 'global'}::${filePath}`;
+    }
+
+    _getRoomId(app) {
+        if (app?.room && app.room.id !== undefined && app.room.id !== null) {
+            return app.room.id;
+        }
+        return null;
+    }
+
+    _clearCacheForRoom(roomId) {
+        if (roomId === null) return;
+        for (const key of this.cache.keys()) {
+            if (key.startsWith(`${roomId}::`)) {
+                this.cache.delete(key);
+            }
         }
     }
 }
