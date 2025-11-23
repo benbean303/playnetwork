@@ -12,6 +12,7 @@ import performance from './libs/performance.js';
 import levels from './libs/levels.js';
 import scripts from './libs/scripts.js';
 import templates from './libs/templates.js';
+import serverAssets from './libs/server-assets.js';
 
 import Servers from './core/servers.js';
 import Rooms from './core/rooms.js';
@@ -121,6 +122,7 @@ class PlayNetwork extends pc.EventHandler {
 
         await levels.initialize(settings.levelProvider);
         await scripts.initialize(settings.scriptsPath);
+        await serverAssets.initialize(settings.assetsPath);
         await templates.initialize(settings.templatesPath);
         this.rooms.initialize();
 

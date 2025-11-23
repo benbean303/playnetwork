@@ -7,6 +7,7 @@ import NetworkEntities from './network-entities/network-entities.js';
 import scripts from './../libs/scripts.js';
 import templates from './../libs/templates.js';
 import levels from './../libs/levels.js';
+import serverAssets from './../libs/server-assets.js';
 import performance from '../libs/performance.js';
 
 /**
@@ -79,6 +80,7 @@ export default class Room extends pc.EventHandler {
     }
 
     async initialize(levelId) {
+        await serverAssets.addApplication(this.app);
         await templates.addApplication(this.app);
 
         await this._loadLevel(levelId);

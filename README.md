@@ -127,3 +127,12 @@ So we can use Editor API in order to get JSON:
 6. Paste copied JSON into your template file.
 
 Then use its ID to get it from the registry.
+
+# Server Assets 📦
+
+Any PlayCanvas asset tagged with `server-asset` is downloaded by `scene-downloader.js` into the `assets/` directory in two parts:
+
+- `<assetId>.json` – metadata describing the asset (same format PlayCanvas uses)
+- `<assetId>-<filename>` – the actual file payload that `json.file.url` references (for example a model JSON or GLB)
+
+Provide that directory via the `assetsPath` option when starting PlayNetwork so rooms can preload those assets before templates instantiate. Run the downloader every time you update templates or server-only assets to keep both folders in sync.

@@ -17,6 +17,25 @@ class Templates {
     async initialize(directory) {
         this.directory = directory;
 
+        if (!pc.Asset.prototype._pnStringified) {
+            const originalToString = pc.Asset.prototype.toString;
+            pc.Asset.prototype.toString = function toString() {
+                if (this.id !== undefined && this.id !== null) {
+                    return String(this.id);
+                }
+                if (originalToString) {
+                    return originalToString.call(this);
+                }
+                return '[Asset]';
+            };
+            Object.defineProperty(pc.Asset.prototype, '_pnStringified', {
+                value: true,
+                configurable: false,
+                enumerable: false,
+                writable: false
+            });
+        }
+
         pc.ComponentSystem.prototype.addComponent = function addComponent(entity, data) {
             if (data === 0) {
                 data = {};
@@ -187,6 +206,7 @@ class Templates {
                 asset.tags.add(json.tags[i]);
             }
 
+            this._validateCollisionMeshes(json.data, app);
             app.assets.add(asset);
             app.assets.load(asset);
 
@@ -200,6 +220,35 @@ class Templates {
         }
 
         return null;
+    }
+
+    _validateCollisionMeshes(data, app) {
+        if (!data || !data.entities) {
+            return;
+        }
+
+        const ids = Object.keys(data.entities);
+        for (let i = 0; i < ids.length; i++) {
+            const entity = data.entities[ids[i]];
+            if (!entity?.components?.collision) {
+                continue;
+            }
+
+            const collision = entity.components.collision;
+            if (collision.type !== 'mesh') {
+                continue;
+            }
+
+            const assetId = collision.renderAsset ?? collision.asset;
+            if (assetId === null || assetId === undefined) {
+                throw new Error(`Mesh collision on entity ${entity.name} has no asset reference`);
+            }
+
+            const asset = app.assets.get(assetId);
+            if (!asset || !asset.resource) {
+                throw new Error(`Mesh collision asset ${assetId} for entity ${entity.name} is missing or not loaded`);
+            }
+        }
     }
 }
 

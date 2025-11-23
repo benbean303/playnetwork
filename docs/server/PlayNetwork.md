@@ -93,6 +93,7 @@ Start PlayNetwork, by providing configuration parameters.
 | settings.websocketUrl | `string` | Publicly or inter-network accessible URL to this servers WebSocket endpoint. |  
 | settings.scriptsPath | `string` | Relative path to script components. |  
 | settings.templatesPath | `string` | Relative path to templates. |  
+| settings.assetsPath | `string` | Relative path to server-only assets (e.g. collision meshes). |  
 | settings.levelProvider | `object` | Instance of a level provider. |  
 | settings.server | `http.Server` &#124; `https.Server` | Instance of a http(s) server. |  
 
